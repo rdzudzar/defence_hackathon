@@ -183,12 +183,50 @@ def get_accounts_with_large_transfers(df_transactions):
 
 def clear_references():
     
-    first_word = df_transactions['REFERENCE'].split()[0]
+    words = df_transactions['REFERENCE'].str.split()
+        
+    first_word = []
+    for i, word in enumerate(words):
+        first = word[0]
+        first_word.append(first)
     
-    unique_first_words = np.unique(first_word)
+    return np.unique(first_word)
     
-    return unique_first_words
+
+def from_and_to_self_transaction():
     
+    self_self = self_transactions['FROMACCTID']
+
+    to_transactions = []
+    from_transactions = []
+    for i, acc in enumerate(self_self):
+    
+        to_tr = len(df_transactions [ df_transactions['TOACCTID'] == acc ])
+        from_tr = len(df_transactions [ df_transactions['FROMACCTID'] == acc ])
+
+        to_transactions.append(to_tr)
+        from_transactions.append(from_tr)
+        
+    return to_transactions, from_transactions
+
+def hist_to_transations():
+    
+    
+    nbins = 20
+
+    fig, ax = plt.subplots(figsize=(8, 8))
+    
+    ax.hist(to_transactions,  bins = np.linspace(min(to_transactions), max(to_transactions), nbins), color='lightgrey', 
+            edgecolor='k', label='To self-self account')
+    
+    
+    ax.set_ylabel(r"Number")
+    ax.set_xlabel(r"How many times transferred")
+    
+    plt.legend(loc=0)
+    plt.show()
+    
+    return
 
 
 if __name__ == "__main__":
@@ -223,3 +261,10 @@ if __name__ == "__main__":
     acc_large_transactions = get_accounts_with_large_transfers(df_transactions)
     
     unique_first_word_ref = clear_references()
+    
+    to_transactions, from_transactions = from_and_to_self_transaction()
+    
+    # Plot hist of to_self transactions total amount
+    hist_to_transations()
+    
+    
