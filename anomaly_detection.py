@@ -155,6 +155,41 @@ def hist_many_account(df_transactions, begin, end, bins):
 
 
 
+def get_accounts_with_large_transfers(df_transactions):
+    
+    a_90k = df_transactions['FROMACCTID'][ df_transactions['AMOUNT'] >= 90000]
+    
+    fig, ax = plt.subplots(figsize=(7,7))
+
+    for i, acc in enumerate(acc_large_transactions):
+        
+        data = df_transactions['AMOUNT'][df_transactions['FROMACCTID']==acc]
+        
+        ax.hist(data,  bins = np.linspace(min(data), max(data), 50), 
+        color='lightgrey', edgecolor='k')
+
+
+    ax.set_ylabel(r"Number of transactions")
+    ax.set_xlabel(r"Amount transferred")
+
+    ax.set_yscale('log')
+
+    #plt.legend(loc=0)
+     
+    plt.show()
+        
+    return a_90k
+
+
+def clear_references():
+    
+    first_word = df_transactions['REFERENCE'].split()[0]
+    
+    unique_first_words = np.unique(first_word)
+    
+    return unique_first_words
+    
+
 
 if __name__ == "__main__":
     
@@ -184,3 +219,7 @@ if __name__ == "__main__":
     hist_many_account(df_transactions, 90000, 105000, 50)
     hist_many_account(df_transactions, 199900, 200100, 50)
     
+    # Accounts that have large transactions
+    acc_large_transactions = get_accounts_with_large_transfers(df_transactions)
+    
+    unique_first_word_ref = clear_references()
