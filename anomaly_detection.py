@@ -15,6 +15,9 @@ from scipy import stats
 
 # Scientific colormaps: https://cmasher.readthedocs.io/user/usage.html
 import cmasher as cmr
+import matplotlib.dates as mdates
+import random
+
 
 plt.rcdefaults() #---reset plotting style
 import matplotlib.font_manager
@@ -161,7 +164,7 @@ def get_accounts_with_large_transfers(df_transactions):
     
     fig, ax = plt.subplots(figsize=(7,7))
 
-    for i, acc in enumerate(acc_large_transactions):
+    for i, acc in enumerate(a_90k):
         
         data = df_transactions['AMOUNT'][df_transactions['FROMACCTID']==acc]
         
@@ -228,6 +231,32 @@ def hist_to_transations():
     
     return
 
+def get_transfer_dates_from_random_account():
+    
+    
+    df_merged = merge_datasets()
+    random_account = random.choice(df_merged['ACCTID'])
+
+
+    df_merged['Date'] = pd.to_datetime(df_merged['TXDATE'])
+    
+    # Plot
+    plt.figure()
+    #plt.plot(large_amounts['TXDATE'], large_amounts['AMOUNT'])
+    plt.scatter(df_merged['Date'][df_merged['ACCTID']==random_account], 
+                df_merged['AMOUNT'][df_merged['ACCTID']==random_account],
+             color = 'grey', marker='*')
+    
+    ax = plt.gca()
+    ax.xaxis.set_major_locator(mdates.MonthLocator(interval=2))
+    ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+    plt.gcf().autofmt_xdate() # Rotation
+    
+        
+    ax.set_ylabel(r"Amount Transferred")
+    ax.set_xlabel(r"Date Transferred")
+    
+    plt.show()
 
 if __name__ == "__main__":
     
@@ -267,4 +296,4 @@ if __name__ == "__main__":
     # Plot hist of to_self transactions total amount
     hist_to_transations()
     
-    
+    get_transfer_dates_from_random_account()
